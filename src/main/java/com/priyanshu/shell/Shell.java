@@ -31,6 +31,7 @@ public class Shell {
             System.out.print("$ ");
             command=sc.nextLine();
             String[] tokens=Parser.parseInput(command);
+            if(tokens[0].isEmpty()) continue;
             String[] args=Arrays.copyOfRange(tokens, 1, tokens.length);
             Command cmd = commands.get(tokens[0]);
             if(cmd != null){
