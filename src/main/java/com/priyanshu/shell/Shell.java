@@ -3,10 +3,7 @@ package com.priyanshu.shell;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.priyanshu.shell.commands.Command;
-import com.priyanshu.shell.commands.EchoCommand;
-import com.priyanshu.shell.commands.ExitCommand;
-import com.priyanshu.shell.commands.PwdCommand;
+import com.priyanshu.shell.commands.*;
 import com.priyanshu.shell.parser.Parser;
 
 import java.util.Arrays;
@@ -37,7 +34,7 @@ public class Shell {
             if(cmd != null){
                 cmd.execute(args);
             } else {
-                System.out.println(tokens[0] + ": command not found");
+                if(!ExternalCommand.execute(tokens)) System.out.println(tokens[0] + ": command not found");
             }
         }
     }
