@@ -1,5 +1,7 @@
 package com.priyanshu.shell;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,11 +14,23 @@ import java.util.Scanner;
 public class Shell {
     private final Map<String, Command> commands;
 
+    private Path currentDirectory;
+
+    public Path getCurrentDirectory() {
+        return currentDirectory;
+    }
+
+    public void setCurrentDirectory(Path currentDirectory) {
+        this.currentDirectory = currentDirectory;
+    }
+
     public Shell(){
         commands=new HashMap<>();
         commands.put("exit", new ExitCommand());
         commands.put("echo", new EchoCommand());
-        commands.put("pwd", new PwdCommand());
+        commands.put("pwd", new PwdCommand(this));
+        commands.put("cd", new CdCommand(this));
+        currentDirectory = Paths.get(System.getProperty("user.dir"));
     }
 
 
@@ -34,7 +48,7 @@ public class Shell {
             if(cmd != null){
                 cmd.execute(args);
             } else {
-                if(!ExternalCommand.execute(tokens)) System.out.println(tokens[0] + ": command not found");
+                if(!ExternalCommand.execute(tokens,currentDirectory)) System.out.println(tokens[0] + ": command not found");
             }
         }
     }
