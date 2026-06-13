@@ -1,6 +1,8 @@
-package com.priyanshu.shell.commands;
+package com.priyanshu.shell.commands.builtin;
 
-public class EchoCommand implements Command{
+import com.priyanshu.shell.commands.Command;
+
+public class EchoCommand implements Command {
     @Override
     public void execute(String[] args){
         for (String arg : args) {

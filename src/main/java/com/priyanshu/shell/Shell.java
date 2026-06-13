@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.priyanshu.shell.commands.*;
+import com.priyanshu.shell.commands.builtin.*;
+import com.priyanshu.shell.commands.external.ExternalCommand;
 import com.priyanshu.shell.parser.Parser;
 
 import java.util.Arrays;

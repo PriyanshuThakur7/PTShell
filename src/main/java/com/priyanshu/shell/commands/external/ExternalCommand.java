@@ -1,4 +1,4 @@
-package com.priyanshu.shell.commands;
+package com.priyanshu.shell.commands.external;
 
 import java.io.IOException;
 import java.nio.file.Path;

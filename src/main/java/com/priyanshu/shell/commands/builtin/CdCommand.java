@@ -1,11 +1,12 @@
-package com.priyanshu.shell.commands;
+package com.priyanshu.shell.commands.builtin;
 
 import com.priyanshu.shell.Shell;
+import com.priyanshu.shell.commands.Command;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class CdCommand implements Command{
+public class CdCommand implements Command {
 
     public CdCommand(Shell shell) {
         this.shell = shell;
