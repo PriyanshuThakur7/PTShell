@@ -2,19 +2,15 @@ package com.priyanshu.shell;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import com.priyanshu.shell.commands.*;
 import com.priyanshu.shell.commands.builtin.*;
-import com.priyanshu.shell.commands.external.ExternalCommand;
+import com.priyanshu.shell.executor.PipelineExecutor;
 import com.priyanshu.shell.parser.Parser;
 
-import java.util.Arrays;
-import java.util.Scanner;
-
 public class Shell {
-    private final Map<String, Command> commands;
+    private final Map<String, Command> builtinCommands;
 
     private Path currentDirectory;
 
@@ -27,11 +23,10 @@ public class Shell {
     }
 
     public Shell(){
-        commands=new HashMap<>();
-        commands.put("exit", new ExitCommand());
-        commands.put("echo", new EchoCommand());
-        commands.put("pwd", new PwdCommand(this));
-        commands.put("cd", new CdCommand(this));
+        builtinCommands=new HashMap<>();
+        builtinCommands.put("exit", new ExitCommand());
+        builtinCommands.put("pwd", new PwdCommand(this));
+        builtinCommands.put("cd", new CdCommand(this));
         currentDirectory = Paths.get(System.getProperty("user.dir"));
     }
 
@@ -43,14 +38,13 @@ public class Shell {
         while (true){
             System.out.print("$ ");
             command=sc.nextLine();
-            String[] tokens=Parser.parseInput(command);
-            if(tokens[0].isEmpty()) continue;
-            String[] args=Arrays.copyOfRange(tokens, 1, tokens.length);
-            Command cmd = commands.get(tokens[0]);
-            if(cmd != null){
-                cmd.execute(args);
-            } else {
-                if(!ExternalCommand.execute(tokens,currentDirectory)) System.out.println(tokens[0] + ": command not found");
+            if(command.isEmpty()) continue;
+            List<String[]> commands=Parser.handlePipeline(command);
+            try{
+                PipelineExecutor.execute(commands,builtinCommands,currentDirectory);
+            }
+            catch (Exception e){
+                System.out.println("Error: Not a valid command");
             }
         }
     }
