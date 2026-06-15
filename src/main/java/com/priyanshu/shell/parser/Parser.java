@@ -11,7 +11,9 @@ public class Parser {
         String[] commands = input.split("\\|");
         List<String[]> pipeline=new ArrayList<>();
         for(String cmd: commands){
-            pipeline.add(parseInput(cmd.trim()));
+            String trimmed = cmd.trim();
+            if(trimmed.isEmpty()) continue;
+            pipeline.add(parseInput(trimmed));
         }
         return pipeline;
     }

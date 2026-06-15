@@ -1,5 +1,6 @@
 package com.priyanshu.shell;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -32,19 +33,22 @@ public class Shell {
 
 
     public void start(){
-        Scanner sc=new Scanner(System.in);
         String command;
 
-        while (true){
-            System.out.print("$ ");
-            command=sc.nextLine();
-            if(command.isEmpty()) continue;
-            List<String[]> commands=Parser.handlePipeline(command);
-            try{
-                PipelineExecutor.execute(commands,builtinCommands,currentDirectory);
-            }
-            catch (Exception e){
-                System.out.println("Error: Not a valid command");
+        try(Scanner sc=new Scanner(System.in);){
+            while (true){
+                System.out.print("$ ");
+                command=sc.nextLine();
+                if(command.isEmpty()) continue;
+                List<String[]> commands=Parser.handlePipeline(command);
+                try{
+                    PipelineExecutor.execute(commands,builtinCommands,currentDirectory);
+                }
+                catch(IOException e){
+                    System.out.println("shell: error executing command");
+                } catch(InterruptedException e){
+                    Thread.currentThread().interrupt();
+                }
             }
         }
     }

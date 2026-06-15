@@ -5,6 +5,7 @@ import com.priyanshu.shell.commands.Command;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class CdCommand implements Command {
 
@@ -16,7 +17,15 @@ public class CdCommand implements Command {
 
     @Override
     public void execute(String[] args) {
-        Path newPath=shell.getCurrentDirectory().resolve(args[0]).normalize();
+        Path newPath;
+
+        if(args.length==0){
+            newPath= Paths.get(System.getProperty("user.home"));
+        }
+        else{
+            newPath=shell.getCurrentDirectory().resolve(args[0]).normalize();
+        }
+
         if(Files.isDirectory(newPath)) {
             shell.setCurrentDirectory(newPath);
         }
