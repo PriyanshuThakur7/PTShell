@@ -66,8 +66,3 @@ Commands can be chained using the `|` operator. Output of each command is piped 
 ```
 $ ls -la | grep java | wc -l
 ```
-
-
-## License
-
-MIT
