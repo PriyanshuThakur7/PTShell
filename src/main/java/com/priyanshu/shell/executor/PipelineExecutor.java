@@ -1,8 +1,12 @@
 package com.priyanshu.shell.executor;
 
 import com.priyanshu.shell.commands.Command;
+import com.priyanshu.shell.parser.ParsedCommand;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,21 +14,47 @@ import java.util.List;
 import java.util.Map;
 
 public class PipelineExecutor {
-    public static void execute(List<String[]> pipeline, Map<String, Command> commandMap,Path currentDirectory) throws IOException, InterruptedException {
+    public static void execute(List<ParsedCommand> pipeline, Map<String, Command> commandMap, Path currentDirectory) throws IOException, InterruptedException {
         List<Process> processes=new ArrayList<>();
 
         for(int i=0;i<pipeline.size();i++){
-            String[] cmd=pipeline.get(i);
-            if(i==0 && commandMap.containsKey(cmd[0])){
-                String[] args= Arrays.copyOfRange(cmd, 1, cmd.length);
-                commandMap.get(cmd[0]).execute(args);
+            ParsedCommand parsedCommand=pipeline.get(i);
+            String[] command= parsedCommand.args;
+
+            if(i==0 && commandMap.containsKey(command[0])){
+
+                String[] args= Arrays.copyOfRange(parsedCommand.args, 1, command.length);
+
+                if(parsedCommand.outputFile != null) {
+                    PrintStream original = System.out;
+                    try(PrintStream fileOut = new PrintStream(new FileOutputStream(parsedCommand.outputFile, parsedCommand.append))) {
+                        System.setOut(fileOut);
+                        commandMap.get(command[0]).execute(args);
+                    } finally {
+                        System.setOut(original);
+                    }
+                } else {
+                    commandMap.get(command[0]).execute(args);
+                }
+
                 continue;
             }
-            ProcessBuilder pb=new ProcessBuilder(cmd);
+            ProcessBuilder pb=new ProcessBuilder(command);
             pb.directory(currentDirectory.toFile());
 
-            if(i==pipeline.size()-1){
+            if(parsedCommand.outputFile != null) {
+                File outFile = new File(parsedCommand.outputFile);
+                if(parsedCommand.append) {
+                    pb.redirectOutput(ProcessBuilder.Redirect.appendTo(outFile));
+                } else {
+                    pb.redirectOutput(outFile);
+                }
+            } else if(i==pipeline.size()-1) {
                 pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+            }
+
+            if(parsedCommand.inputFile != null) {
+                pb.redirectInput(new File(parsedCommand.inputFile));
             }
 
             pb.redirectError(ProcessBuilder.Redirect.INHERIT);
