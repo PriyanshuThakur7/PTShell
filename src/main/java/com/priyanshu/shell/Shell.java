@@ -8,6 +8,7 @@ import java.util.*;
 import com.priyanshu.shell.commands.*;
 import com.priyanshu.shell.commands.builtin.*;
 import com.priyanshu.shell.executor.PipelineExecutor;
+import com.priyanshu.shell.parser.ParsedCommand;
 import com.priyanshu.shell.parser.Parser;
 
 public class Shell {
@@ -40,7 +41,7 @@ public class Shell {
                 System.out.print("$ ");
                 command=sc.nextLine();
                 if(command.isEmpty()) continue;
-                List<String[]> commands=Parser.handlePipeline(command);
+                List<ParsedCommand> commands=Parser.handlePipeline(command);
                 try{
                     PipelineExecutor.execute(commands,builtinCommands,currentDirectory);
                 }
