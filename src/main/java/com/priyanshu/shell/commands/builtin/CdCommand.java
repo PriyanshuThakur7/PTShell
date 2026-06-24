@@ -13,7 +13,7 @@ public class CdCommand implements Command {
         this.shell = shell;
     }
 
-    private Shell shell;
+    private final Shell shell;
 
     @Override
     public void execute(String[] args) {
