@@ -8,11 +8,18 @@ import java.util.*;
 import com.priyanshu.shell.commands.*;
 import com.priyanshu.shell.commands.builtin.*;
 import com.priyanshu.shell.executor.PipelineExecutor;
+import com.priyanshu.shell.parser.Expander;
 import com.priyanshu.shell.parser.ParsedCommand;
 import com.priyanshu.shell.parser.Parser;
 
 public class Shell {
     private final Map<String, Command> builtinCommands;
+
+    private final Map<String,String> env;
+
+    public Map<String, String> getEnv() {
+        return env;
+    }
 
     private Path currentDirectory;
 
@@ -29,7 +36,9 @@ public class Shell {
         builtinCommands.put("exit", new ExitCommand());
         builtinCommands.put("pwd", new PwdCommand(this));
         builtinCommands.put("cd", new CdCommand(this));
+        builtinCommands.put("export", new ExportCommand(this));
         currentDirectory = Paths.get(System.getProperty("user.dir"));
+        env = new HashMap<>();
     }
 
 
@@ -41,6 +50,7 @@ public class Shell {
                 System.out.print("$ ");
                 command=sc.nextLine();
                 if(command.isEmpty()) continue;
+                command= Expander.expand(command, env);
                 List<ParsedCommand> commands=Parser.handlePipeline(command);
                 try{
                     PipelineExecutor.execute(commands,builtinCommands,currentDirectory);
